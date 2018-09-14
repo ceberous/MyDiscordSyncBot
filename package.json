@@ -4,10 +4,10 @@
   "description": "",
   "main": "main.js",
   "dependencies": {
-    "eris": "^0.9.0",
-    "ntwitter": "^0.5.0",
-    "resolver": "^0.1.12",
-    "twitter-node-client": "^0.0.6"
+    "lilreporter": "^1.0.3",
+    "mastodon": "^1.2.2",
+    "redis-manager-utils": "^1.0.0",
+    "resolver": "^0.1.12"
   },
   "devDependencies": {},
   "scripts": {
