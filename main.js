@@ -1,15 +1,16 @@
 const Masto = require( "mastodon" );
 const Reporter = require( "lilreporter" );
-//const RMU = require( "redis-manager-utils" );
+const RMU = require( "redis-manager-utils" );
 
 const Sleep = require( "./utils/generic.js" ).sleep;
 
 const Personal = require( "./personal.js" );
+const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 
 ( async ()=> {
 
-	//var MyRedis = new RMU( 2 );
-	//await MyRedis.init();
+	var MyRedis = new RMU( 2 );
+	await MyRedis.init();
 
 	var MyDiscord = new Reporter( Personal.reporters );
 	await MyDiscord.init();
@@ -41,7 +42,8 @@ const Personal = require( "./personal.js" );
 	
 	await Sleep( 2000 );
 
-	var latest_id = "";
+	var latest_id = await MyRedis.keysGet( LatestID_Key );
+	if ( !latest_id ) { latest_id = ""; }
 	setInterval( async function() {
 
 		var latest = await MyMastodon.get( "timelines/home" , {
@@ -54,6 +56,7 @@ const Personal = require( "./personal.js" );
 				//console.log( "\nMessage: [ " + i.toString() + " ] === " );
 				if ( latest_id !== latest.data[ i ].id ) { latest_id = latest.data[ i ].id; }
 				//console.log( "latest_id === " + latest_id );
+				await MyRedis.keysSet( LatestID_Key , latest_id );				
 				//console.log( latest.data[ i ].content );
 				var new_status = latest.data[ i ].content.replace( "<br />" , " " );
 				new_status = new_status.replace( "<br/>" , " " );
