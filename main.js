@@ -42,7 +42,7 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 	
 	await Sleep( 2000 );
 
-	var latest_id = await MyRedis.keysGet( LatestID_Key );
+	var latest_id = await MyRedis.keyGet( LatestID_Key );
 	if ( !latest_id ) { latest_id = ""; }
 	setInterval( async function() {
 
@@ -56,7 +56,7 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 				//console.log( "\nMessage: [ " + i.toString() + " ] === " );
 				if ( latest_id !== latest.data[ i ].id ) { latest_id = latest.data[ i ].id; }
 				//console.log( "latest_id === " + latest_id );
-				await MyRedis.keysSet( LatestID_Key , latest_id );				
+				await MyRedis.keySet( LatestID_Key , latest_id );				
 				//console.log( latest.data[ i ].content );
 				var new_status = latest.data[ i ].content.replace( "<br />" , " " );
 				new_status = new_status.replace( "<br/>" , " " );
