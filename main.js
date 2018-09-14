@@ -66,7 +66,7 @@ const Personal = require( "./personal.js" );
 			}
 		}
 		else { console.log( "No Data BibleThump" ); }
-	} , 5000 );
+	} , 30000 );
 
 
 })();
