@@ -54,14 +54,19 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 			//console.log( latest.data );
 			for ( var i = ( latest.data.length - 1 ); i > -1; i-- ) {
 				//console.log( "\nMessage: [ " + i.toString() + " ] === " );
+				
+				// ID Stuff
 				if ( latest_id !== latest.data[ i ].id ) { latest_id = latest.data[ i ].id; }
 				//console.log( "latest_id === " + latest_id );
-				await MyRedis.keySet( LatestID_Key , latest_id );				
+				await MyRedis.keySet( LatestID_Key , latest_id );
+
+				// Message Content Stuff
 				//console.log( latest.data[ i ].content );
 				var new_status = latest.data[ i ].content.replace( "<br />" , " " );
 				new_status = new_status.replace( "<br/>" , " " );
 				new_status = new_status.replace( "<br>" , " " );
 				new_status = new_status.replace( /<[^>]+>/g , "" );
+				new_status = new_status + " <" + Personal.mastodon.statuses_url + latest_id + ">";
 				//console.log( new_status );
 				await MyDiscord.post( new_status );
 				await Sleep( 1000 );
