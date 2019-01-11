@@ -23,7 +23,7 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 
 	process.on( "unhandledRejection" , function( reason , p ) {
 		var xPrps = Object.keys( reason );
-		console.log( xPrps ); 
+		console.log( xPrps );
 		console.error( reason , "Unhandled Rejection at Promise" , p );
 		console.trace();
 		if ( !reason ) { return; }
@@ -38,8 +38,8 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 		const x11 = err.toString();
 		MyDiscord.error( err );
 	});
-	
-	
+
+
 	await Sleep( 2000 );
 
 	var latest_id = await MyRedis.keyGet( LatestID_Key );
@@ -54,7 +54,7 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 			//console.log( latest.data );
 			for ( var i = ( latest.data.length - 1 ); i > -1; i-- ) {
 				//console.log( "\nMessage: [ " + i.toString() + " ] === " );
-				
+
 				// ID Stuff
 				if ( latest_id !== latest.data[ i ].id ) { latest_id = latest.data[ i ].id; }
 				//console.log( "latest_id === " + latest_id );
@@ -62,9 +62,9 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 
 				// Message Content Stuff
 				//console.log( latest.data[ i ].content );
-				var new_status = latest.data[ i ].content.replace( "<br />" , " " );
-				new_status = new_status.replace( "<br/>" , " " );
-				new_status = new_status.replace( "<br>" , " " );
+				var new_status = latest.data[ i ].content.replace( "<br />" , "\n" );
+				new_status = new_status.replace( "<br/>" , "\n" );
+				new_status = new_status.replace( "<br>" , "\n" );
 				new_status = new_status.replace( /<[^>]+>/g , "" );
 				new_status = new_status + " <" + Personal.mastodon.statuses_url + latest_id + ">";
 				//console.log( new_status );
