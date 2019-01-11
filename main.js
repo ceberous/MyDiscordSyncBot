@@ -7,6 +7,21 @@ const Sleep = require( "./utils/generic.js" ).sleep;
 const Personal = require( "./personal.js" );
 const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 
+
+function escapeMastodonHtml( text ) {
+	text = text.replace( /&amp;/g , "&" );
+	text = text.replace( /&lt;/g , "<" );
+	text = text.replace( /&gt;/g , ">" );
+	text = text.replace( /&quot;/g , '"' );
+	text = text.replace( /&#039;/g , "'" );
+	text = text.replace( /&apos;/g , "'" );
+	text = text.replace( /<br\/>/g , "\n" );
+	text = text.replace( /<br\ \/>/g , "\n" );
+	text = text.replace( /<br>/g , "\n" );
+	text = text.replace( /<[^>]+>/g , "" );
+	return text;
+}
+
 ( async ()=> {
 
 	var MyRedis = new RMU( 2 );
@@ -42,11 +57,11 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 
 	await Sleep( 2000 );
 
-	var latest_id = await MyRedis.keyGet( LatestID_Key );
+	let latest_id = await MyRedis.keyGet( LatestID_Key );
 	if ( !latest_id ) { latest_id = ""; }
 	setInterval( async function() {
 
-		var latest = await MyMastodon.get( "timelines/home" , {
+		let latest = await MyMastodon.get( "timelines/home" , {
 			since_id: latest_id
 		});
 		if ( latest.data ) {
@@ -61,20 +76,15 @@ const LatestID_Key = "MY.DISCORD_SYNC.LATEST_ID";
 				await MyRedis.keySet( LatestID_Key , latest_id );
 
 				// Message Content Stuff
-				//console.log( latest.data[ i ].content );
-				var new_status = latest.data[ i ].content.replace( "<br />" , "\n" );
-				new_status = new_status.replace( "<br/>" , "\n" );
-				new_status = new_status.replace( "<br>" , "\n" );
-				new_status = new_status.replace( /<[^>]+>/g , "" );
-				new_status = new_status + " <" + Personal.mastodon.statuses_url + latest_id + ">";
-				//console.log( new_status );
-				await MyDiscord.post( new_status );
+				let message = escapeMastodonHtml( latest.data[ i ].content );
+				message = message + " \n<" + Personal.mastodon.statuses_url + latest_id + ">";
+				console.log( message );
+				await MyDiscord.post( message );
 				await Sleep( 1000 );
 
 			}
 		}
 		else { console.log( "No Data BibleThump" ); }
 	} , 30000 );
-
 
 })();
